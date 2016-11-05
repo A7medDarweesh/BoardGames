@@ -7,10 +7,21 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
 public class BoardPiece extends Actor {
-    private ShapeRenderer renderer = new ShapeRenderer();
+    private final ShapeRenderer renderer = new ShapeRenderer();
     private static final int STROKE_WIDTH = 5;
-    public BoardPiece(int x, int y, int width, int height) {
+    ReversiSphere sphere;
+    private final ReversiGameScreen game;
+    private final int tileNumber;
+    public BoardPiece(int x, int y, int width, int height,ReversiGameScreen game,int tileNumber) {
         setBounds(x, y, width, height);
+        this.game=game;
+        addListener(new ClickHandler(this));
+        this.tileNumber=tileNumber;
+    }
+
+    @Override
+    public String toString() {
+        return (getX()+";"+getY());
     }
 
     @Override
@@ -25,16 +36,29 @@ public class BoardPiece extends Actor {
 
         renderer.setProjectionMatrix(batch.getProjectionMatrix());
         renderer.setTransformMatrix(batch.getTransformMatrix());
-        renderer.translate(getX(), getY(), 0);
+//        renderer.translate(getX(), getY(), 0);
 
         renderer.begin(ShapeType.Filled);
         renderer.setColor(Color.BLACK);
+        
         renderer.rect(getX(), getY(), getWidth(), getHeight());
         renderer.setColor(Color.GREEN);
         renderer.rect(getX() + STROKE_WIDTH, getY() + STROKE_WIDTH, getWidth() - (STROKE_WIDTH * 2), getHeight() - (STROKE_WIDTH * 2));
+        if(sphere!=null)
+            sphere.draw(batch, parentAlpha);
         renderer.end();
 
         batch.begin();
 
+    }
+
+    public void addSphere() {
+        if(sphere==null){            
+            sphere=new ReversiSphere((int)(getWidth()/4+getX()), (int)(getHeight()/4+getY()),(int) getWidth()/2, (int)getHeight()/2,game.getPlayer(),renderer);
+            game.doMove(tileNumber);
+            game.switchPlayer();
+        }else{
+            
+        }
     }
 }
