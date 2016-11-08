@@ -6,6 +6,7 @@
 
 package com.mygdx.game.reversi;
 
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
@@ -21,8 +22,19 @@ BoardPiece boardPiece;
 
     @Override
     public void clicked(InputEvent event, float x, float y) {
-        boardPiece.addSphere();
-        System.out.println("current piece="+boardPiece);
+        // boardPiece.addSphere();
+        // System.out.println("current piece="+boardPiece);
     }
-    
+
+    @Override
+    public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+        if (button != Input.Buttons.LEFT || pointer > 0)
+            return false;
+        return true;
+    }
+
+    @Override
+    public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+        boardPiece.addSphere();
+    }
 }

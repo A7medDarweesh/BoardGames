@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.bitfire.postprocessing.PostProcessor;
 
 public class BoardPiece extends Actor {
     private final ShapeRenderer renderer = new ShapeRenderer();
@@ -12,6 +13,7 @@ public class BoardPiece extends Actor {
     ReversiSphere sphere;
     private final ReversiGameScreen game;
     private final int tileNumber;
+    PostProcessor post;
     public BoardPiece(int x, int y, int width, int height,ReversiGameScreen game,int tileNumber) {
         setBounds(x, y, width, height);
         this.game=game;

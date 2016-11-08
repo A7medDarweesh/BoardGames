@@ -6,7 +6,6 @@
 
 package com.mygdx.game.reversi;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -27,7 +26,6 @@ public class ReversiSphere extends Actor {
     }
 public ReversiSphere(int x, int y, int width, int height,Player player,ShapeRenderer renderer) {
         setBounds(x, y, width, height);
-        System.out.println("sphere bounds="+x+";;"+y);
         this.player=player;
         this.renderer=renderer;
     }
