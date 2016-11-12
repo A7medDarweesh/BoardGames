@@ -1,5 +1,6 @@
 buildscript {
     repositories {
+        mavenLocal()
         mavenCentral()
     }
     dependencies {
@@ -21,8 +22,9 @@ apply plugin: "java"
     }
 
     repositories {
-        mavenCentral()
         mavenLocal()
+        mavenCentral()
+        
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
     }
