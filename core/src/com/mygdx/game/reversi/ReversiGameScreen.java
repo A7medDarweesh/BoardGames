@@ -1,13 +1,17 @@
 package com.mygdx.game.reversi;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.sun.javafx.scene.traversal.Direction;
-import java.util.LinkedList;
-import java.util.List;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class ReversiGameScreen implements Screen {
     private final Stage stage;
@@ -20,26 +24,39 @@ public class ReversiGameScreen implements Screen {
 
     public ReversiGameScreen(ReversiGameBase reversiGameBase) {
         game = reversiGameBase;
-        
+        Viewport fitViewport = new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         ScreenViewport screen = new ScreenViewport();
         stage = new Stage(screen);
         Gdx.input.setInputProcessor(stage);
         player=Player.WHITE;
     }
 
-    private void DrawBaord() {
+    private void DrawBaord(boolean redraw) {
         
-        int screenHeight = stage.getViewport().getScreenWidth();
-        int screenWidth = stage.getViewport().getScreenWidth();
-        int xTranslate=(screenWidth-(boardWidth*pieceWidth))/2;
-        int yTranselate=(screenHeight-(boardHeight*pieceHeiht))/2;
-        System.out.println("x="+xTranslate+";;y"+yTranselate);
+        pieceWidth = Gdx.graphics.getWidth() / 10;
+        pieceHeiht = (int) ((Gdx.graphics.getHeight() / 10));
+        int screenHeight = Gdx.graphics.getHeight();
+        int screenWidth = Gdx.graphics.getWidth();
+        int effectiveDimension=Math.min(pieceWidth, pieceHeiht);
+        int xTranslate=(screenWidth-(boardWidth*effectiveDimension))/2;
+        int yTranselate=(screenHeight-(boardHeight*effectiveDimension))/2;
         
-        
-        for(int i=0;i<boardHeight*boardWidth;i++){
-            BoardPiece currentpBoardPiece=new BoardPiece(xTranslate+(i%boardWidth)*pieceWidth,yTranselate+(i/boardWidth)*pieceHeiht, pieceWidth, pieceHeiht,this,i);
-            pieces[i]=currentpBoardPiece;
-            stage.addActor(currentpBoardPiece);
+        if (redraw) {
+            Array<Actor> actors = stage.getActors();
+            for (int i = 0; i < actors.size; i++) {
+                if(actors.get(i)instanceof BoardPiece){
+                    BoardPiece piece=(BoardPiece) actors.get(i);
+                    piece.resize(xTranslate + (i % boardWidth) * effectiveDimension, yTranselate + (i / boardWidth) * effectiveDimension, effectiveDimension, effectiveDimension);
+                }
+                
+            }
+        } else {
+
+            for (int i = 0; i < boardHeight * boardWidth; i++) {
+                BoardPiece currentpBoardPiece = new BoardPiece(xTranslate + (i % boardWidth) * pieceWidth, yTranselate + (i / boardWidth) * pieceHeiht, effectiveDimension, effectiveDimension, this, i);
+                pieces[i] = currentpBoardPiece;
+                stage.addActor(currentpBoardPiece);
+            }
         }
     }
     @Override
@@ -49,7 +66,7 @@ public class ReversiGameScreen implements Screen {
         stage.act(delta);
         stage.draw();
         if(firstDraw){
-            DrawBaord();
+            DrawBaord(false);
             firstDraw=false;
         }
         
@@ -59,6 +76,7 @@ public class ReversiGameScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
+        DrawBaord(true);
 
     }
 
@@ -112,7 +130,7 @@ public class ReversiGameScreen implements Screen {
         addedSphere++;
         for(Directions dir:Directions.values()){
             int nextTileNumber=tileNumber;
-            List<ReversiSphere>spheresToFlip=new LinkedList<>();
+            List<ReversiSphere> spheresToFlip = new LinkedList<ReversiSphere>();
         while(true){
             nextTileNumber+=dir.getStep();
             if(nextTileNumber<0||nextTileNumber>=pieces.length){
@@ -130,6 +148,9 @@ public class ReversiGameScreen implements Screen {
                     break;
                 }
                    spheresToFlip.add(currentPiece.sphere);
+                if (nextTileNumber % 8 == 0 || nextTileNumber % 8 == 7) {
+                    break;
+                }
         }
     }
         if(addedSphere>=pieces.length){

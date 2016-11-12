@@ -9,8 +9,8 @@ public class DesktopLauncher {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.height=450;
 		config.width=450;
-		config.title="my awesome game";
-            LwjglApplication lwjglApplication = new LwjglApplication(new ReversiGameBase(), config);
+        config.title = "Reversi";
+        new LwjglApplication(new ReversiGameBase(), config);
             
 	}
 }
