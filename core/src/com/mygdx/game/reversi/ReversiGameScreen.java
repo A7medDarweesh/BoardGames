@@ -3,6 +3,7 @@ package com.mygdx.game.reversi;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -12,6 +13,9 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.bitfire.postprocessing.PostProcessor;
+import com.bitfire.postprocessing.effects.Bloom;
+import com.bitfire.utils.ShaderLoader;
 
 public class ReversiGameScreen implements Screen {
     private final Stage stage;
@@ -20,18 +24,34 @@ public class ReversiGameScreen implements Screen {
     private boolean firstDraw=true;
     private Player player;
     int addedSphere;
+    public PostProcessor postProcessor;
+    public Bloom bloom;
     private final BoardPiece[]pieces=new BoardPiece[boardWidth*boardHeight];
 
     public ReversiGameScreen(ReversiGameBase reversiGameBase) {
+        ShaderLoader.BasePath = "shaders/";
         game = reversiGameBase;
         Viewport fitViewport = new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         ScreenViewport screen = new ScreenViewport();
         stage = new Stage(screen);
         Gdx.input.setInputProcessor(stage);
         player=Player.WHITE;
+        setUpPostProcessor();
+    }
+
+    private void setUpPostProcessor() {
+        boolean isDesktop = (Gdx.app.getType() == ApplicationType.Desktop);
+        postProcessor = new PostProcessor(false, true, isDesktop);
+        bloom = new Bloom((int) (Gdx.graphics.getWidth() * 0.25f), (int) (Gdx.graphics.getHeight() * 0.25f));
+
+        postProcessor.addEffect(bloom);
+        //
+
+        // initializeEffects();
     }
 
     private void DrawBaord(boolean redraw) {
+        postProcessor.capture();
         pieceWidth = Gdx.graphics.getWidth() / 10;
         pieceHeiht = Gdx.graphics.getHeight() / 10;
         int screenHeight = Gdx.graphics.getHeight();
@@ -52,6 +72,7 @@ public class ReversiGameScreen implements Screen {
                 stage.addActor(currentpBoardPiece);
             }
         }
+        postProcessor.render();
     }
     @Override
     public void render(float delta) {
@@ -59,6 +80,7 @@ public class ReversiGameScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stage.act(delta);
         stage.draw();
+
         if(firstDraw){
             DrawBaord(false);
             firstDraw=false;
