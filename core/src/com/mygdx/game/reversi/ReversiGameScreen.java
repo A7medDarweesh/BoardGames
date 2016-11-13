@@ -42,7 +42,7 @@ public class ReversiGameScreen implements Screen {
     private void setUpPostProcessor() {
         boolean isDesktop = (Gdx.app.getType() == ApplicationType.Desktop);
         postProcessor = new PostProcessor(false, true, isDesktop);
-        bloom = new Bloom((int) (Gdx.graphics.getWidth() * 0.25f), (int) (Gdx.graphics.getHeight() * 0.25f));
+        bloom = new Bloom((int) (Gdx.graphics.getWidth() * 0.1f), (int) (Gdx.graphics.getHeight() * 0.1f));
 
         postProcessor.addEffect(bloom);
         //
@@ -51,23 +51,28 @@ public class ReversiGameScreen implements Screen {
     }
 
     private void DrawBaord(boolean redraw) {
-        postProcessor.capture();
+
         pieceWidth = Gdx.graphics.getWidth() / 10;
-        pieceHeiht = Gdx.graphics.getHeight() / 10;
+        pieceHeiht = (int) ((Gdx.graphics.getHeight() / 10));
         int screenHeight = Gdx.graphics.getHeight();
         int screenWidth = Gdx.graphics.getWidth();
-        int xTranslate=(screenWidth-(boardWidth*pieceWidth))/2;
-        int yTranselate=(screenHeight-(boardHeight*pieceHeiht))/2;
+        int effectiveDimension=Math.min(pieceWidth, pieceHeiht);
+        int xTranslate=(screenWidth-(boardWidth*effectiveDimension))/2;
+        int yTranselate=(screenHeight-(boardHeight*effectiveDimension))/2;
         
         if (redraw) {
             Array<Actor> actors = stage.getActors();
             for (int i = 0; i < actors.size; i++) {
-                actors.get(i).setBounds(xTranslate + (i % boardWidth) * pieceWidth, yTranselate + (i / boardWidth) * pieceHeiht, pieceWidth, pieceHeiht);
+                if(actors.get(i)instanceof BoardPiece){
+                    BoardPiece piece=(BoardPiece) actors.get(i);
+                    piece.resize(xTranslate + (i % boardWidth) * effectiveDimension, yTranselate + (i / boardWidth) * effectiveDimension, effectiveDimension, effectiveDimension);
+                }
+                
             }
         } else {
 
             for (int i = 0; i < boardHeight * boardWidth; i++) {
-                BoardPiece currentpBoardPiece = new BoardPiece(xTranslate + (i % boardWidth) * pieceWidth, yTranselate + (i / boardWidth) * pieceHeiht, pieceWidth, pieceHeiht, this, i);
+                BoardPiece currentpBoardPiece = new BoardPiece(xTranslate + (i % boardWidth) * pieceWidth, yTranselate + (i / boardWidth) * pieceHeiht, effectiveDimension, effectiveDimension, this, i);
                 pieces[i] = currentpBoardPiece;
                 stage.addActor(currentpBoardPiece);
             }
@@ -76,11 +81,13 @@ public class ReversiGameScreen implements Screen {
     }
     @Override
     public void render(float delta) {
+        postProcessor.capture();
         Gdx.gl.glClearColor(0.2f, 0.3f, 0.7f, 0.5f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stage.act(delta);
-        stage.draw();
 
+        stage.draw();
+        postProcessor.render();
         if(firstDraw){
             DrawBaord(false);
             firstDraw=false;

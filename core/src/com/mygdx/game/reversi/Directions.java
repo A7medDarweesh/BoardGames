@@ -12,7 +12,7 @@ package com.mygdx.game.reversi;
  */
 public enum Directions {
     SOUTH(-8),NORTH(8),EAST(1),WEST(-1),NORTH_WEST(7),NORTH_EAST(9),SOUTH_WEST(-9),SOUTHEAST(-7);
-    private int step;
+    private final int step;
 
     private Directions(int step) {
         this.step = step;
